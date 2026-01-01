@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quiz - Plug-in Charge Control System</title>
+<style>
+/* ================================
+   Quiz Styles
+   ================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f5f5;
+    padding: 20px;
+}
+
+.quiz-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.quiz-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.quiz-header h1 {
+    color: #1f2937;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.quiz-header p {
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.question-block {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+}
+
+.question-block.correct {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.question-block.incorrect {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.question-number {
+    color: #3b82f6;
+    font-weight: 600;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.question-text {
+    color: #1f2937;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* Multiple Choice Options */
+.options {
+    margin-top: 15px;
+}
+
+.options label {
+    display: block;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.options label:hover {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.options input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+/* Fill-in-the-Blank Dropdown */
+.fill-blank-content {
+    background: white;
+    padding: 20px;
+    border-radius: 6px;
+    line-height: 2.5;
+    font-size: 16px;
+}
+
+.select-dropdown {
+    padding: 8px 12px;
+    border: 2px solid #3b82f6;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 500;
+    background: white;
+    cursor: pointer;
+    min-width: 200px;
+    transition: all 0.2s ease;
+}
+
+.select-dropdown:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+}
+
+.select-dropdown:focus {
+    outline: none;
+    border-color: #1d4ed8;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Feedback/Commentary */
+.commentary {
+    margin-top: 20px;
+    padding: 15px;
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    border-radius: 4px;
+}
+
+.commentary h4 {
+    color: #92400e;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.commentary p {
+    color: #78350f;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* Submit Button */
+.quiz-actions {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.btn-submit {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 15px 50px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.btn-submit:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(59, 130, 246, 0.4);
+}
+
+.btn-submit:active {
+    transform: translateY(0);
+}
+
+/* Results Display */
+.results {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 30px;
+}
+
+.results h2 {
+    font-size: 32px;
+    margin-bottom: 15px;
+}
+
+.results p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.btn-retry {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 12px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.btn-retry:hover {
+    transform: scale(1.05);
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-wrapper">
+    <div class="quiz-header">
+        <h1>Final Quiz</h1>
+        <p>Plug-in Charge Control System</p>
+    </div>
+    
+    <div id="quiz-container"></div>
+    
+    <div class="quiz-actions">
+        <button class="btn-submit" onclick="submitQuiz()">Submit Quiz</button>
+    </div>
+    
+    <div id="results-container"></div>
+</div>
+
+<!-- ================================
+     QUIZ DATA (JSON FORMAT)
+     👉 EDIT THIS SECTION TO CHANGE QUESTIONS
+     ================================ -->
+<script id="quiz-data" type="application/json">
+[
+    {
+        "type": "multiple-choice",
+        "question": "Select all correct sentences for the control of the plug-in charger control system.",
+        "options": [
+            "If the door is opened with IG OFF during charging, the current charging status and the time until charging is completed are displayed until the door is closed.",
+            "When the charging cable is connected, the charging connector connection indicator illuminates to inform the driver that the cable is connected.",
+            "Alternating current supplied from AC charging stand/household outlet is fed to EV charger through AC charging inlet.",
+            "In AC charging control, EV charger charges EV battery by boosting power and converting it to alternating current.",
+            "The alternating current supplied by the DC charger passes through DC charging inlet, DC charging relays and SMR, and charges the EV battery."
+        ],
+        "correctAnswers": [2, 3],
+        "feedback": "Correct Answers: 2 and 3.<br>• 1 is incorrect: Displayed for a CERTAIN PERIOD of time.<br>• 4 is incorrect: Converts to DIRECT current (DC).<br>• 5 is incorrect: DC charger supplies DIRECT current (DC)."
+    },
+    {
+        "type": "fill-in-blank",
+        "question": "Select the appropriate terms in blanks to complete for AC charging when charging starts.",
+        "content": "1) [BLANK1] when AC charging cable is connected to the charge inlet.<br>The EV ECU [BLANK2] the EV control system by a signal from the cable. It transmits a charger enable signal to the plug-in charge ECU.<br>2) The plug-in ECU receives a signal from the EV ECU and transmits an AC charging relay turn-on request signal to the battery ECU.<br>3) The battery ECU receives the AC charging relay turn-on request signal from the plug-in charge ECU and drives [BLANK3].<br>4) After driving AC charging relay, the plug-in charge ECU operates [BLANK4] to begin charging. Also, the AC charging indicator is illuminated.",
+        "blanks": {
+            "BLANK1": {
+                "options": [
+                    "Select...",
+                    "Charging Indicator Light On",
+                    "Locks the charging connector",
+                    "Locks the charging lid"
+                ],
+                "correctAnswer": 2
+            },
+            "BLANK2": {
+                "options": [
+                    "Select...",
+                    "activates",
+                    "deactivates"
+                ],
+                "correctAnswer": 2
+            },
+            "BLANK3": {
+                "options": [
+                    "Select...",
+                    "AC charging relay",
+                    "AC charging relay and SMR",
+                    "SMR"
+                ],
+                "correctAnswer": 1
+            },
+            "BLANK4": {
+                "options": [
+                    "Select...",
+                    "EV system",
+                    "EV charger"
+                ],
+                "correctAnswer": 2
+            }
+        },
+        "feedback": "• [Control when charging starts]<br><br>See e-Learning : G20365"
+    },
+    {
+        "type": "fill-in-blank",
+        "question": "Select the appropriate terms in blanks to complete for AC charging during charging.",
+        "content": "1) The plug-in charge ECU communicates with [BLANK1] and transmits signals, such as charge current and charge voltage, to the EV ECU.<br>2) The battery ECU calculates SOC from [BLANK2] and transmits it to the EV ECU. Also activate [BLANK3] as required.<br>*If the warming system is activated during charging, the charging time will be longer than normal.<br>3) The EV ECU transmits EV charger operating request signal to the plug-in charge control ECU based on the battery ECU and AC charging cable.<br>4) The plug-in charge ECU controls [BLANK4] based on the EV charger driving request.",
+        "blanks": {
+            "BLANK1": {
+                "options": [
+                    "Select...",
+                    "AC charging cabling",
+                    "EV charger",
+                    "battery ECU"
+                ],
+                "correctAnswer": 1
+            },
+            "BLANK2": {
+                "options": [
+                    "Select...",
+                    "the charge/discharge current of the EV battery",
+                    "the charge voltage of the EV battery"
+                ],
+                "correctAnswer": 1
+            },
+            "BLANK3": {
+                "options": [
+                    "Select...",
+                    "the EV battery cooling system",
+                    "the EV battery warming system",
+                    "the EV battery cooling/warming system"
+                ],
+                "correctAnswer": 3
+            },
+            "BLANK4": {
+                "options": [
+                    "Select...",
+                    "the DC charging relays",
+                    "the EV charger",
+                    "the SMR"
+                ],
+                "correctAnswer": 2
+            }
+        },
+        "feedback": "• [Control during charging]<br><br>See e-Learning : G20365"
+    },
+    {
+        "type": "multiple-choice",
+        "question": "Select all correct sentences for DC charging during charge.",
+        "options": [
+            "The plug-in charge ECU provides an indication to DC charger based on SOC from the battery ECU and adjusts the power level optimally.",
+            "If the warming system is activated during charging, the optimal temperature can be kept, the charging time will be shorter than normal.",
+            "The plug-in charge ECU transmits the charge stop signal to the EV ECU and DC charger when the EV battery is fully charged.",
+            "DC charger stops supplying power and stops charging according to the charge stop signal from the EV ECU."
+        ],
+        "correctAnswers": [1, 3],
+        "feedback": "Correct Answers: 1 and 3.<br>• 2 is incorrect: Charging time will be LONGER.<br>• 4 is incorrect: Charge stop signal is from plug-in charge ECU, not EV ECU."
+    }
+]
+</script>
+
+<!-- ================================
+     QUIZ LOGIC
+     ================================ -->
+<script>
+// Load quiz data from JSON
+const quizData = JSON.parse(document.getElementById('quiz-data').textContent);
+
+// Render quiz on page load
+window.addEventListener('load', function() {
+    renderQuiz();
+});
+
+// Render all quiz questions
+function renderQuiz() {
+    const container = document.getElementById('quiz-container');
+    let html = '';
+    
+    quizData.forEach((question, index) => {
+        html += `<div class="question-block" id="question-${index}">`;
+        html += `<div class="question-number">Question ${index + 1}</div>`;
+        html += `<div class="question-text">${question.question}</div>`;
+        
+        if (question.type === 'multiple-choice') {
+            html += renderMultipleChoice(question, index);
+        } else if (question.type === 'fill-in-blank') {
+            html += renderFillInBlank(question, index);
+        }
+        
+        html += `<div class="commentary" id="commentary-${index}" style="display: none;">`;
+        html += `<h4>📋 Commentary</h4>`;
+        html += `<p>${question.feedback}</p>`;
+        html += `</div>`;
+        html += `</div>`;
+    });
+    
+    container.innerHTML = html;
+}
+
+// Render multiple choice question
+function renderMultipleChoice(question, questionIndex) {
+    let html = '<div class="options">';
+    
+    question.options.forEach((option, optionIndex) => {
+        const optionNumber = optionIndex + 1;
+        html += `<label>`;
+        html += `<input type="checkbox" name="q${questionIndex}" value="${optionNumber}">`;
+        html += `${optionNumber}. ${option}`;
+        html += `</label>`;
+    });
+    
+    html += '</div>';
+    return html;
+}
+
+// Render fill-in-the-blank question
+function renderFillInBlank(question, questionIndex) {
+    let content = question.content;
+    
+    // Replace [BLANK1], [BLANK2], etc. with dropdowns
+    for (let blankKey in question.blanks) {
+        const blank = question.blanks[blankKey];
+        let selectHtml = `<select class="select-dropdown" name="q${questionIndex}_${blankKey}">`;
+        
+        blank.options.forEach((option, optIndex) => {
+            selectHtml += `<option value="${optIndex}">${option}</option>`;
+        });
+        
+        selectHtml += `</select>`;
+        content = content.replace(`[${blankKey}]`, selectHtml);
+    }
+    
+    return `<div class="fill-blank-content">${content}</div>`;
+}
+
+// Submit and grade quiz
+function submitQuiz() {
+    let score = 0;
+    let totalQuestions = quizData.length;
+    let allAnswered = true;
+    
+    quizData.forEach((question, index) => {
+        let isCorrect = false;
+        
+        if (question.type === 'multiple-choice') {
+            // Get selected answers
+            const selected = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`))
+                .map(input => parseInt(input.value))
+                .sort((a, b) => a - b);
+            
+            if (selected.length === 0) {
+                allAnswered = false;
+            }
+            
+            // Check if correct
+            const correct = question.correctAnswers.sort((a, b) => a - b);
+            isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
+            
+        } else if (question.type === 'fill-in-blank') {
+            // Check all blanks
+            isCorrect = true;
+            for (let blankKey in question.blanks) {
+                const select = document.querySelector(`select[name="q${index}_${blankKey}"]`);
+                const selectedValue = parseInt(select.value);
+                
+                if (selectedValue === 0) {
+                    allAnswered = false;
+                }
+                
+                if (selectedValue !== question.blanks[blankKey].correctAnswer) {
+                    isCorrect = false;
+                }
+            }
+        }
+        
+        // Mark question
+        const questionBlock = document.getElementById(`question-${index}`);
+        const commentary = document.getElementById(`commentary-${index}`);
+        
+        questionBlock.classList.remove('correct', 'incorrect');
+        
+        if (isCorrect) {
+            questionBlock.classList.add('correct');
+            commentary.style.display = 'none';
+            score++;
+        } else {
+            questionBlock.classList.add('incorrect');
+            commentary.style.display = 'block';
+        }
+    });
+    
+    if (!allAnswered) {
+        alert('⚠️ Please answer all questions before submitting!');
+        return;
+    }
+    
+    // Display results
+    displayResults(score, totalQuestions);
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Display quiz results
+function displayResults(score, total) {
+    const percentage = Math.round((score / total) * 100);
+    const passed = percentage >= 70;
+    
+    const resultsContainer = document.getElementById('results-container');
+    
+    let html = `<div class="results">`;
+    html += `<h2>${passed ? '🎉 Congratulations!' : '📚 Keep Learning!'}</h2>`;
+    html += `<p>Your Score: <strong>${score} / ${total}</strong></p>`;
+    html += `<p>Percentage: <strong>${percentage}%</strong></p>`;
+    html += `<p>${passed ? 'You passed the quiz!' : 'Please review the material and try again.'}</p>`;
+    html += `<button class="btn-retry" onclick="location.reload()">Retry Quiz</button>`;
+    html += `</div>`;
+    
+    resultsContainer.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
