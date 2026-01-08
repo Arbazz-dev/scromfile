@@ -1,4 +1,4 @@
-[
+const quizData = [
     {
         "type": "multiple-choice",
         "text": "Select all correct sentences for the control of the plug-in charger control system.",

@@ -231,27 +231,21 @@ body {
     </div>
 </div>
 
+<script src="quiz-data.js"></script>
 <script>
-let quizData = [];
+//  const quizData = quizData;
+
+ if(!Array.isArray(quizData) || quizData.length === 0) {
+    document.getElementById("viewer").innerHTML = '<p style="text-align:center; color:#666;">No quiz data available.</p>';
+    } else {    
+    renderQuiz();
+    }
 
 // Initialize Quiz on Load by fetching JSON
 window.addEventListener("load", async () => {
     if (typeof LMSInitialize_ === "function") LMSInitialize_("");
     
-    try {
-        const response = await fetch('quiz-data.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        quizData = await response.json();
-        renderQuiz();
-    } catch (error) {
-        console.error("Could not load quiz data:", error);
-        document.getElementById("viewer").innerHTML = 
-            `<p style="text-align:center; color:red; font-size:18px;">
-                Error loading quiz data. Please ensure <strong>quiz-data.json</strong> is in the same folder.
-            </p>`;
-    }
+   
 });
 
 window.addEventListener("beforeunload", () => { 
