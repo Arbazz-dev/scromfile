@@ -166,165 +166,153 @@
 
     </script>
 
+    <script src="config.js"></script>
+
 <script>
 window.addEventListener('load', function() {
+  // ================================
+  // 1. CONFIGURATION
+  // ================================
+  // Reads from config.js if available, otherwise defaults to 35
+  const totalSlides = (window.QUIZ_CONFIG && window.QUIZ_CONFIG.totalSlides);
+  
+  // Define the Quiz URL here
+  const quizUrl = 'quiz.html'; 
+
   let quizReady = false;
   let originalButtonHTML = '';
-  const totalSlides = 35;
-  
-  // 👉 CHANGE THIS: Path to your quiz.html file
-  const QUIZ_URL = 'quiz.html'; // Change to your actual quiz file path
-  
-  const nextButtonSelector = '#content > div > div.main-container > nav > div.navigation-controls.universal-control-panel__navigation-controls > button.uikit-primary-button.uikit-primary-button_size_medium.navigation-controls__button.uikit-primary-button_next.navigation-controls__button_next';
-  
-  const prevButtonSelector = '#content > div > div.main-container > nav > div.navigation-controls.universal-control-panel__navigation-controls > button.uikit-secondary-button.uikit-secondary-button_size_medium.navigation-controls__button.uikit-secondary-button_prev.navigation-controls__button_prev';
-  
-  function watchNextButton() {
-    const nextButton = document.querySelector(nextButtonSelector);
-    
-    if (!nextButton) {
-      console.log('Next button not found, retrying...');
-      setTimeout(watchNextButton, 500);
+
+  // ================================
+  // 2. DYNAMIC BUTTON FINDER
+  // ================================
+  function getNavigationButtons() {
+    // Find the main panel
+    const panel = document.querySelector('.universal-control-panel');
+    if (!panel) return null;
+
+    // Get the navigation container (Usually the 2nd child, index 1)
+    if (panel.children.length < 2) return null;
+    const targetContainer = panel.children[1]; 
+
+    // Get Buttons based on index: [0]=Prev, [2]=Next
+    if (targetContainer.children.length < 3) return null;
+
+    return {
+      prev: targetContainer.children[0], 
+      next: targetContainer.children[2]  
+    };
+  }
+
+  // ================================
+  // 3. MAIN LOGIC (WATCHER)
+  // ================================
+  function initWatcher() {
+    const buttons = getNavigationButtons();
+
+    // Retry if buttons aren't rendered yet
+    if (!buttons || !buttons.next || !buttons.prev) {
+      console.log('Buttons not found yet, retrying...');
+      setTimeout(initWatcher, 500);
       return;
     }
+
+    console.log('✅ Navigation buttons found!', buttons);
     
-    console.log('Next button found, setting up observer');
-    
-    // Save original button HTML
+    const nextButton = buttons.next;
+    const prevButton = buttons.prev;
+
+    // Save original HTML for resetting later
     if (!originalButtonHTML) {
       originalButtonHTML = nextButton.innerHTML;
     }
-    
-    // Watch for when the button becomes disabled AND check slide number
+
+    // --- Observer for the Next Button (Attributes) ---
     const observer = new MutationObserver(function(mutations) {
       checkIfLastSlide(nextButton);
     });
-    
+
     observer.observe(nextButton, {
       attributes: true,
       attributeFilter: ['disabled', 'class']
     });
-    
-    // Also observe the entire document for slide counter changes
+
+    // --- Observer for Slide Count Changes (Body) ---
     const slideObserver = new MutationObserver(function() {
       checkIfLastSlide(nextButton);
     });
-    
+
     slideObserver.observe(document.body, {
       childList: true,
       subtree: true,
       characterData: true
     });
-    
-    // Watch Previous button clicks to reset quiz state
-    watchPrevButton();
-    
-    // Initial check
-    checkIfLastSlide(nextButton);
-  }
-  
-  function watchPrevButton() {
-    const prevButton = document.querySelector(prevButtonSelector);
-    
-    if (!prevButton) {
-      console.log('Previous button not found, retrying...');
-      setTimeout(watchPrevButton, 500);
-      return;
-    }
-    
-    console.log('Previous button found, setting up click listener');
-    
-    // Add click listener to Previous button
+
+    // --- Listener for Previous Button ---
     prevButton.addEventListener('click', function() {
-      console.log('Previous button clicked - checking if need to revert');
-      
-      // Wait a bit for slide change to complete
+      console.log('Previous button clicked');
       setTimeout(function() {
         const slideInfo = getCurrentSlideNumber();
-        
         if (slideInfo && slideInfo.current < slideInfo.total && quizReady) {
-          console.log(`Moved back to slide ${slideInfo.current}/${slideInfo.total} - reverting to Next button`);
-          revertToNextButton();
+          revertToNextButton(nextButton);
         }
       }, 100);
     });
+
+    // Initial check on load
+    checkIfLastSlide(nextButton);
   }
-  
+
+  // ================================
+  // 4. HELPER FUNCTIONS
+  // ================================
   function getCurrentSlideNumber() {
     const bodyText = document.body.innerText;
+    // Look for patterns like "35/35" or "35 of 35"
     const match = bodyText.match(/(\d+)\s*[\/of]+\s*(\d+)/i);
-    
+
     if (match) {
-      const current = parseInt(match[1]);
-      const total = parseInt(match[2]);
-      console.log(`Detected slide: ${current}/${total}`);
-      return { current, total };
+      return {
+        current: parseInt(match[1]),
+        total: parseInt(match[2])
+      };
     }
-    
-    const slideIndicator = document.querySelector('.slide-counter') || 
-                          document.querySelector('.slide-number') ||
-                          document.querySelector('[class*="slide"]');
-    
-    if (slideIndicator) {
-      const text = slideIndicator.textContent;
-      const match2 = text.match(/(\d+)\s*[\/of]+\s*(\d+)/i);
-      if (match2) {
-        return {
-          current: parseInt(match2[1]),
-          total: parseInt(match2[2])
-        };
-      }
-    }
-    
     return null;
   }
-  
-  function checkIfLastSlide(button) {
+
+  function checkIfLastSlide(nextButton) {
     const slideInfo = getCurrentSlideNumber();
-    const isDisabled = button.hasAttribute('disabled') || button.disabled;
+    if (!slideInfo) return;
+
+    // Use the totalSlides variable we defined at the top
+    const isLastSlide = slideInfo.current === totalSlides;
     
-    // If on last slide and button is disabled, convert to quiz button
-    if (slideInfo && slideInfo.current === slideInfo.total && isDisabled && !quizReady) {
-      console.log('Last slide reached (35/35) - converting to quiz button');
-      convertToQuizButton(button);
+    const isDisabled = nextButton.hasAttribute('disabled') || nextButton.disabled;
+
+    if (isLastSlide && isDisabled && !quizReady) {
+      console.log('Last slide reached - Converting button');
+      convertToQuizButton(nextButton);
       quizReady = true;
     } 
-    // If NOT on last slide and quiz button is active, revert to Next
-    else if (slideInfo && slideInfo.current < slideInfo.total && quizReady) {
-      console.log(`On slide ${slideInfo.current}/${slideInfo.total} - reverting to Next button`);
-      revertToNextButton();
-    }
-    else if (slideInfo) {
-      console.log(`On slide ${slideInfo.current}/${slideInfo.total} - keeping current state`);
+    else if (!isLastSlide && quizReady) {
+      console.log('Not last slide - Reverting button');
+      revertToNextButton(nextButton);
     }
   }
-  
+
   function convertToQuizButton(button) {
-    // Mark button as quiz mode FIRST
     button.dataset.quizMode = 'true';
-    
-    // Remove disabled state and keep it removed
     button.removeAttribute('disabled');
     button.disabled = false;
     
-    // Change button text to "Start Quiz"
-    button.textContent = 'Start Quiz';
+    // Force text update with style
+    button.innerHTML = '<span style="font-size:16px; font-weight:bold;padding:2px;">Start Quiz</span>';
     
-    // Update any inner text elements
-    const textNodes = button.querySelectorAll('*');
-    textNodes.forEach(node => {
-      if (node.childNodes.length === 1 && node.childNodes[0].nodeType === 3) {
-        node.textContent = 'Start Quiz';
-      }
-    });
-    
-    // Add our handler with capture phase to intercept clicks
+    // Add click listener with "true" for capture phase
     button.addEventListener('click', quizClickHandler, true);
-    
-    // Watch for iSpring trying to re-disable the button
+
+    // Stop iSpring from re-disabling it
     const disableObserver = new MutationObserver(function(mutations) {
       if (button.dataset.quizMode === 'true' && button.disabled) {
-        console.log('Button re-disabled by iSpring - re-enabling');
         button.removeAttribute('disabled');
         button.disabled = false;
       }
@@ -335,122 +323,88 @@ window.addEventListener('load', function() {
       attributeFilter: ['disabled']
     });
     
-    // Store observer reference for cleanup
     button.dataset.disableObserver = 'active';
-    
-    console.log('Button converted to "Start Quiz"');
   }
-  
+
+  function revertToNextButton(button) {
+    delete button.dataset.quizMode;
+    delete button.dataset.disableObserver;
+    button.removeEventListener('click', quizClickHandler, true);
+    button.innerHTML = originalButtonHTML;
+    quizReady = false;
+  }
+
   function quizClickHandler(e) {
     const button = e.currentTarget;
-    
-    // Only intercept if in quiz mode
+    // Check if we are in quiz mode
     if (button.dataset.quizMode === 'true') {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
-      console.log('Start Quiz clicked');
-      startQuiz();
+      console.log('Start Quiz clicked - Opening Modal');
+      showQuizInModal(); // Call the modal function
     }
   }
-  
-  function revertToNextButton() {
-    const button = document.querySelector(nextButtonSelector);
-    if (!button) return;
-    
-    // Remove quiz mode flag
-    delete button.dataset.quizMode;
-    delete button.dataset.disableObserver;
-    
-    // Remove quiz click handler
-    button.removeEventListener('click', quizClickHandler, true);
-    
-    // Restore original HTML
-    button.innerHTML = originalButtonHTML;
-    
-    // Reset quiz ready flag
-    quizReady = false;
-    
-    console.log('Button reverted to "Next" with original functionality');
-  }
-  
+
   // ================================
-  // 👉 MODIFIED: Open quiz.html in iframe modal
+  // 5. MODAL FUNCTION (FIXED)
   // ================================
-  function startQuiz() {
-    showQuizInModal();
-  }
-  
   function showQuizInModal() {
     // Create modal overlay
     const modal = document.createElement('div');
-    modal.id = 'quiz-modal';
     modal.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
       bottom: 0;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.9); 
       z-index: 100000;
-      display: flex;
-      align-items: center;
+      display: flex; 
+      align-items: center; 
       justify-content: center;
-      padding: 20px;
     `;
     
     // Create close button
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '✕';
     closeBtn.style.cssText = `
-      position: absolute;
-      top: 20px;
+      position: absolute; 
+      top: 20px; 
       right: 20px;
-      background: white;
-      border: none;
-      width: 40px;
+      background: white; 
+      border: none; 
+      width: 40px; 
       height: 40px;
-      border-radius: 50%;
-      font-size: 24px;
+      border-radius: 50%; 
+      font-size: 24px; 
       cursor: pointer;
-      z-index: 100001;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     `;
-    closeBtn.onmouseover = function() {
-      this.style.transform = 'scale(1.1)';
-      this.style.background = '#f3f4f6';
-    };
-    closeBtn.onmouseout = function() {
-      this.style.transform = 'scale(1)';
-      this.style.background = 'white';
-    };
-    closeBtn.onclick = function() {
-      modal.remove();
-    };
+    closeBtn.onclick = () => modal.remove();
     
-    // Create iframe to load quiz.html
+    // Create iframe
     const iframe = document.createElement('iframe');
-    iframe.src = QUIZ_URL;
+    
+    // FIX IS HERE: Use 'quizUrl' directly, not 'CONFIG.quizUrl'
+    iframe.src = quizUrl; 
+    
     iframe.style.cssText = `
-      width: 100%;
-      height: 100%;
-      max-width: 1200px;
-      max-height: 90vh;
-      border: none;
-      border-radius: 12px;
+      width: 100%; 
+      height: 100%; 
+      border: none; 
       background: white;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
     `;
     
     modal.appendChild(closeBtn);
     modal.appendChild(iframe);
     document.body.appendChild(modal);
     
-    console.log('Quiz loaded in modal');
+    console.log('Quiz modal appended to body');
   }
-  
-  watchNextButton();
+
+  // Start the finding process
+  initWatcher();
 });
 </script>
 

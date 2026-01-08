@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Quiz - Plug-in Charge Control System</title>
+<title>Final Quiz</title>
 <style>
 /* ================================
-   Quiz Styles
+   FULL SCREEN TARGET UI CSS
    ================================ */
 * {
     margin: 0;
@@ -16,43 +16,54 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f5f5;
-    padding: 20px;
+    background: #ffffff;
+    color: #1f2937;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
+/* Main Container - Full Screen */
 .quiz-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
+    width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 30px;
+    padding: 40px;
+    border-radius: 0;
+    box-shadow: none;
 }
 
+.quiz-content-container {
+    max-width: 1000px; 
+    margin: 0 auto;
+}
+
+/* Header */
 .quiz-header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     padding-bottom: 20px;
     border-bottom: 2px solid #e5e7eb;
 }
 
 .quiz-header h1 {
     color: #1f2937;
-    font-size: 28px;
+    font-size: 32px;
     margin-bottom: 10px;
 }
 
 .quiz-header p {
     color: #6b7280;
-    font-size: 16px;
+    font-size: 18px;
 }
 
+/* Question Blocks */
 .question-block {
     background: #f9fafb;
-    border: 2px solid #e5e7eb;
+    border: 1px solid #e5e7eb;
     border-radius: 8px;
-    padding: 25px;
-    margin-bottom: 25px;
+    padding: 30px;
+    margin-bottom: 30px;
     transition: all 0.3s ease;
 }
 
@@ -70,31 +81,34 @@ body {
     color: #3b82f6;
     font-weight: 600;
     font-size: 18px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .question-text {
     color: #1f2937;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 500;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     line-height: 1.6;
 }
 
-/* Multiple Choice Options */
+/* Options */
 .options {
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .options label {
     display: block;
-    padding: 12px 15px;
-    margin-bottom: 10px;
+    padding: 15px 20px;
+    margin-bottom: 12px;
     background: white;
     border: 2px solid #e5e7eb;
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-size: 16px;
 }
 
 .options label:hover {
@@ -103,30 +117,32 @@ body {
 }
 
 .options input[type="checkbox"] {
-    margin-right: 10px;
+    margin-right: 12px;
     cursor: pointer;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
+    transform: translateY(3px);
 }
 
-/* Fill-in-the-Blank Dropdown */
+/* Fill-in-the-Blank */
 .fill-blank-content {
     background: white;
-    padding: 20px;
+    padding: 25px;
     border-radius: 6px;
-    line-height: 2.5;
-    font-size: 16px;
+    line-height: 2.8;
+    font-size: 17px;
+    border: 1px solid #e5e7eb;
 }
 
 .select-dropdown {
     padding: 8px 12px;
     border: 2px solid #3b82f6;
     border-radius: 4px;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 500;
     background: white;
     cursor: pointer;
-    min-width: 200px;
+    margin: 0 5px;
     transition: all 0.2s ease;
 }
 
@@ -135,46 +151,37 @@ body {
     background: #eff6ff;
 }
 
-.select-dropdown:focus {
-    outline: none;
-    border-color: #1d4ed8;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Feedback/Commentary */
+/* Commentary */
 .commentary {
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 25px;
+    padding: 20px;
     background: #fef3c7;
-    border-left: 4px solid #f59e0b;
+    border-left: 5px solid #f59e0b;
     border-radius: 4px;
+    animation: fadeIn 0.5s;
 }
 
 .commentary h4 {
     color: #92400e;
     font-size: 16px;
     margin-bottom: 8px;
+    text-transform: uppercase;
+    font-weight: 700;
 }
 
-.commentary p {
-    color: #78350f;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-/* Submit Button */
+/* Actions */
 .quiz-actions {
     text-align: center;
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #e5e7eb;
+    margin-top: 50px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
 }
 
 .btn-submit {
     background: #3b82f6;
     color: white;
     border: none;
-    padding: 15px 50px;
+    padding: 15px 60px;
     font-size: 18px;
     font-weight: 600;
     border-radius: 8px;
@@ -186,345 +193,238 @@ body {
 .btn-submit:hover {
     background: #2563eb;
     transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(59, 130, 246, 0.4);
+    box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
 }
 
-.btn-submit:active {
-    transform: translateY(0);
-}
-
-/* Results Display */
+/* Results */
 .results {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 30px;
+    padding: 40px;
     border-radius: 12px;
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
+    animation: slideUp 0.5s ease;
 }
 
 .results h2 {
-    font-size: 32px;
-    margin-bottom: 15px;
+    font-size: 36px;
+    margin-bottom: 20px;
 }
 
-.results p {
-    font-size: 18px;
-    margin-bottom: 10px;
-}
-
-.btn-retry {
-    background: white;
-    color: #667eea;
-    border: none;
-    padding: 12px 40px;
-    font-size: 16px;
-    font-weight: 600;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-top: 20px;
-    transition: all 0.3s ease;
-}
-
-.btn-retry:hover {
-    transform: scale(1.05);
-}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 </style>
 </head>
 <body>
 
 <div class="quiz-wrapper">
-    <div class="quiz-header">
-        <h1>Final Quiz</h1>
-        <p>Plug-in Charge Control System</p>
+    <div class="quiz-content-container">
+        <div class="quiz-header">
+            <h1>Final Quiz</h1>
+            <p>Plug-in Charge Control System</p>
+        </div>
+
+        <div id="viewer">
+            <p style="text-align:center; color:#666;">Loading quiz data...</p>
+        </div>
     </div>
-    
-    <div id="quiz-container"></div>
-    
-    <div class="quiz-actions">
-        <button class="btn-submit" onclick="submitQuiz()">Submit Quiz</button>
-    </div>
-    
-    <div id="results-container"></div>
 </div>
 
-<!-- ================================
-     QUIZ DATA (JSON FORMAT)
-     👉 EDIT THIS SECTION TO CHANGE QUESTIONS
-     ================================ -->
-<script id="quiz-data" type="application/json">
-[
-    {
-        "type": "multiple-choice",
-        "question": "Select all correct sentences for the control of the plug-in charger control system.",
-        "options": [
-            "If the door is opened with IG OFF during charging, the current charging status and the time until charging is completed are displayed until the door is closed.",
-            "When the charging cable is connected, the charging connector connection indicator illuminates to inform the driver that the cable is connected.",
-            "Alternating current supplied from AC charging stand/household outlet is fed to EV charger through AC charging inlet.",
-            "In AC charging control, EV charger charges EV battery by boosting power and converting it to alternating current.",
-            "The alternating current supplied by the DC charger passes through DC charging inlet, DC charging relays and SMR, and charges the EV battery."
-        ],
-        "correctAnswers": [2, 3],
-        "feedback": "Correct Answers: 2 and 3.<br>• 1 is incorrect: Displayed for a CERTAIN PERIOD of time.<br>• 4 is incorrect: Converts to DIRECT current (DC).<br>• 5 is incorrect: DC charger supplies DIRECT current (DC)."
-    },
-    {
-        "type": "fill-in-blank",
-        "question": "Select the appropriate terms in blanks to complete for AC charging when charging starts.",
-        "content": "1) [BLANK1] when AC charging cable is connected to the charge inlet.<br>The EV ECU [BLANK2] the EV control system by a signal from the cable. It transmits a charger enable signal to the plug-in charge ECU.<br>2) The plug-in ECU receives a signal from the EV ECU and transmits an AC charging relay turn-on request signal to the battery ECU.<br>3) The battery ECU receives the AC charging relay turn-on request signal from the plug-in charge ECU and drives [BLANK3].<br>4) After driving AC charging relay, the plug-in charge ECU operates [BLANK4] to begin charging. Also, the AC charging indicator is illuminated.",
-        "blanks": {
-            "BLANK1": {
-                "options": [
-                    "Select...",
-                    "Charging Indicator Light On",
-                    "Locks the charging connector",
-                    "Locks the charging lid"
-                ],
-                "correctAnswer": 2
-            },
-            "BLANK2": {
-                "options": [
-                    "Select...",
-                    "activates",
-                    "deactivates"
-                ],
-                "correctAnswer": 2
-            },
-            "BLANK3": {
-                "options": [
-                    "Select...",
-                    "AC charging relay",
-                    "AC charging relay and SMR",
-                    "SMR"
-                ],
-                "correctAnswer": 1
-            },
-            "BLANK4": {
-                "options": [
-                    "Select...",
-                    "EV system",
-                    "EV charger"
-                ],
-                "correctAnswer": 2
-            }
-        },
-        "feedback": "• [Control when charging starts]<br><br>See e-Learning : G20365"
-    },
-    {
-        "type": "fill-in-blank",
-        "question": "Select the appropriate terms in blanks to complete for AC charging during charging.",
-        "content": "1) The plug-in charge ECU communicates with [BLANK1] and transmits signals, such as charge current and charge voltage, to the EV ECU.<br>2) The battery ECU calculates SOC from [BLANK2] and transmits it to the EV ECU. Also activate [BLANK3] as required.<br>*If the warming system is activated during charging, the charging time will be longer than normal.<br>3) The EV ECU transmits EV charger operating request signal to the plug-in charge control ECU based on the battery ECU and AC charging cable.<br>4) The plug-in charge ECU controls [BLANK4] based on the EV charger driving request.",
-        "blanks": {
-            "BLANK1": {
-                "options": [
-                    "Select...",
-                    "AC charging cabling",
-                    "EV charger",
-                    "battery ECU"
-                ],
-                "correctAnswer": 1
-            },
-            "BLANK2": {
-                "options": [
-                    "Select...",
-                    "the charge/discharge current of the EV battery",
-                    "the charge voltage of the EV battery"
-                ],
-                "correctAnswer": 1
-            },
-            "BLANK3": {
-                "options": [
-                    "Select...",
-                    "the EV battery cooling system",
-                    "the EV battery warming system",
-                    "the EV battery cooling/warming system"
-                ],
-                "correctAnswer": 3
-            },
-            "BLANK4": {
-                "options": [
-                    "Select...",
-                    "the DC charging relays",
-                    "the EV charger",
-                    "the SMR"
-                ],
-                "correctAnswer": 2
-            }
-        },
-        "feedback": "• [Control during charging]<br><br>See e-Learning : G20365"
-    },
-    {
-        "type": "multiple-choice",
-        "question": "Select all correct sentences for DC charging during charge.",
-        "options": [
-            "The plug-in charge ECU provides an indication to DC charger based on SOC from the battery ECU and adjusts the power level optimally.",
-            "If the warming system is activated during charging, the optimal temperature can be kept, the charging time will be shorter than normal.",
-            "The plug-in charge ECU transmits the charge stop signal to the EV ECU and DC charger when the EV battery is fully charged.",
-            "DC charger stops supplying power and stops charging according to the charge stop signal from the EV ECU."
-        ],
-        "correctAnswers": [1, 3],
-        "feedback": "Correct Answers: 1 and 3.<br>• 2 is incorrect: Charging time will be LONGER.<br>• 4 is incorrect: Charge stop signal is from plug-in charge ECU, not EV ECU."
-    }
-]
-</script>
-
-<!-- ================================
-     QUIZ LOGIC
-     ================================ -->
 <script>
-// Load quiz data from JSON
-const quizData = JSON.parse(document.getElementById('quiz-data').textContent);
+let quizData = [];
 
-// Render quiz on page load
-window.addEventListener('load', function() {
-    renderQuiz();
+// Initialize Quiz on Load by fetching JSON
+window.addEventListener("load", async () => {
+    if (typeof LMSInitialize_ === "function") LMSInitialize_("");
+    
+    try {
+        const response = await fetch('quiz-data.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        quizData = await response.json();
+        renderQuiz();
+    } catch (error) {
+        console.error("Could not load quiz data:", error);
+        document.getElementById("viewer").innerHTML = 
+            `<p style="text-align:center; color:red; font-size:18px;">
+                Error loading quiz data. Please ensure <strong>quiz-data.json</strong> is in the same folder.
+            </p>`;
+    }
 });
 
-// Render all quiz questions
+window.addEventListener("beforeunload", () => { 
+    if (typeof LMSCommit_ === "function") LMSCommit_(); 
+});
+
 function renderQuiz() {
-    const container = document.getElementById('quiz-container');
-    let html = '';
+    const viewer = document.getElementById("viewer");
     
-    quizData.forEach((question, index) => {
-        html += `<div class="question-block" id="question-${index}">`;
-        html += `<div class="question-number">Question ${index + 1}</div>`;
-        html += `<div class="question-text">${question.question}</div>`;
-        
-        if (question.type === 'multiple-choice') {
-            html += renderMultipleChoice(question, index);
-        } else if (question.type === 'fill-in-blank') {
-            html += renderFillInBlank(question, index);
-        }
-        
-        html += `<div class="commentary" id="commentary-${index}" style="display: none;">`;
-        html += `<h4>📋 Commentary</h4>`;
-        html += `<p>${question.feedback}</p>`;
-        html += `</div>`;
-        html += `</div>`;
-    });
-    
-    container.innerHTML = html;
-}
+    let html = `<div id="quiz-container">`;
 
-// Render multiple choice question
-function renderMultipleChoice(question, questionIndex) {
-    let html = '<div class="options">';
-    
-    question.options.forEach((option, optionIndex) => {
-        const optionNumber = optionIndex + 1;
-        html += `<label>`;
-        html += `<input type="checkbox" name="q${questionIndex}" value="${optionNumber}">`;
-        html += `${optionNumber}. ${option}`;
-        html += `</label>`;
-    });
-    
-    html += '</div>';
-    return html;
-}
-
-// Render fill-in-the-blank question
-function renderFillInBlank(question, questionIndex) {
-    let content = question.content;
-    
-    // Replace [BLANK1], [BLANK2], etc. with dropdowns
-    for (let blankKey in question.blanks) {
-        const blank = question.blanks[blankKey];
-        let selectHtml = `<select class="select-dropdown" name="q${questionIndex}_${blankKey}">`;
+    quizData.forEach((q, index) => {
+        // Wrapper Block
+        html += `<div class="question-block" id="qblock_${index}">
+                    <div class="question-number">Question ${index + 1}</div>
+                    <div class="question-text">${q.text}</div>`;
         
-        blank.options.forEach((option, optIndex) => {
-            selectHtml += `<option value="${optIndex}">${option}</option>`;
-        });
-        
-        selectHtml += `</select>`;
-        content = content.replace(`[${blankKey}]`, selectHtml);
-    }
-    
-    return `<div class="fill-blank-content">${content}</div>`;
-}
-
-// Submit and grade quiz
-function submitQuiz() {
-    let score = 0;
-    let totalQuestions = quizData.length;
-    let allAnswered = true;
-    
-    quizData.forEach((question, index) => {
-        let isCorrect = false;
-        
-        if (question.type === 'multiple-choice') {
-            // Get selected answers
-            const selected = Array.from(document.querySelectorAll(`input[name="q${index}"]:checked`))
-                .map(input => parseInt(input.value))
-                .sort((a, b) => a - b);
+        if (q.type === "fill-blank") {
+            // Fill in the blank logic
+            let contentHtml = q.content;
             
-            if (selected.length === 0) {
-                allAnswered = false;
-            }
-            
-            // Check if correct
-            const correct = question.correctAnswers.sort((a, b) => a - b);
-            isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
-            
-        } else if (question.type === 'fill-in-blank') {
-            // Check all blanks
-            isCorrect = true;
-            for (let blankKey in question.blanks) {
-                const select = document.querySelector(`select[name="q${index}_${blankKey}"]`);
-                const selectedValue = parseInt(select.value);
-                
-                if (selectedValue === 0) {
-                    allAnswered = false;
+            contentHtml = contentHtml.replace(/\[KEY(\d+)\]/gi, (match, keyNum) => {
+                let keyStr = "key" + keyNum;
+                let optionsList = [];
+                if (Array.isArray(q.dropdownOptions)) {
+                    optionsList = q.dropdownOptions; 
+                } else if (q.dropdownOptions[keyStr]) {
+                    optionsList = q.dropdownOptions[keyStr];
                 }
+                let optionsHtml = optionsList.map(opt => 
+                    `<option value="${opt.value}">${opt.text}</option>`
+                ).join("");
                 
-                if (selectedValue !== question.blanks[blankKey].correctAnswer) {
-                    isCorrect = false;
-                }
-            }
-        }
-        
-        // Mark question
-        const questionBlock = document.getElementById(`question-${index}`);
-        const commentary = document.getElementById(`commentary-${index}`);
-        
-        questionBlock.classList.remove('correct', 'incorrect');
-        
-        if (isCorrect) {
-            questionBlock.classList.add('correct');
-            commentary.style.display = 'none';
-            score++;
+                return `<select id="key${keyNum}_q${index}" name="key${keyNum}_q${index}" class="select-dropdown">${optionsHtml}</select>`;
+            });
+            
+            html += `<div class="fill-blank-content">${contentHtml}</div>`;
         } else {
-            questionBlock.classList.add('incorrect');
-            commentary.style.display = 'block';
+            // Multiple Choice Logic
+            html += `<div class="options">`;
+            q.options.forEach((opt, oIndex) => {
+                html += `<label><input type="checkbox" name="q${index}" value="${oIndex + 1}"> ${oIndex + 1}. ${opt}</label>`;
+            });
+            html += `</div>`;
+        }
+
+        // Feedback Logic
+        html += `   <div class="commentary" style="display:none;">
+                        <h4>📋 Commentary</h4>
+                        <p>${q.feedback}</p>
+                    </div>
+                 </div>`;
+    });
+
+    // Close container and add Submit button
+    html += `  </div>
+               <div class="quiz-actions">
+                 <button class="btn-submit" onclick="gradeQuiz()">Submit Quiz</button>
+               </div>`;
+    
+    viewer.innerHTML = html;
+}
+
+function gradeQuiz() {
+    let score = 0;
+    let allAnswered = true;
+
+    function getSelectedCheckboxes(name) {
+        const chosen = Array.from(document.querySelectorAll(`input[name='${name}']:checked`)).map(e => e.value);
+        chosen.sort();
+        return chosen.join("|");
+    }
+
+    function getDropdownValue(id) {
+        const el = document.getElementById(id);
+        return el ? el.value : "";
+    }
+
+    // Check if everything is answered
+    quizData.forEach((q, index) => {
+        if (q.type === "fill-blank") {
+            for (let key in q.correct) {
+                let keyNum = key.replace("key", ""); 
+                let val = getDropdownValue(`key${keyNum}_q${index}`);
+                if (!val) allAnswered = false;
+            }
+        } else {
+            let val = getSelectedCheckboxes(`q${index}`);
+            if (!val) allAnswered = false;
         }
     });
-    
+
     if (!allAnswered) {
-        alert('⚠️ Please answer all questions before submitting!');
+        alert("Please answer all questions before submitting.");
         return;
     }
-    
-    // Display results
-    displayResults(score, totalQuestions);
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Calculate Score & Show Feedback
+    quizData.forEach((q, index) => {
+        let isCorrect = false;
+        if (q.type === "fill-blank") {
+            let allKeysCorrect = true;
+            for (let key in q.correct) {
+                let keyNum = key.replace("key", "");
+                let val = getDropdownValue(`key${keyNum}_q${index}`);
+                if (val !== q.correct[key]) allKeysCorrect = false;
+            }
+            isCorrect = allKeysCorrect;
+        } else {
+            let val = getSelectedCheckboxes(`q${index}`);
+            isCorrect = (val === q.correct);
+        }
+        
+        mark(`qblock_${index}`, isCorrect);
+        if (isCorrect) score++;
+    });
+
+    // Handle SCORM & Results
+    if (typeof LMSSetValue_ === "function") {
+        if (score === quizData.length) {
+            LMSSetValue_("cmi.core.score.raw", "100");
+            LMSSetValue_("cmi.core.lesson_status", "passed");
+            LMSCommit_();
+            showCompletionMessage(score, quizData.length, true);
+            
+            setTimeout(() => {
+                if (typeof LMSFinish_ === "function") LMSFinish_("");
+                window.close();
+            }, 3000);
+        } else {
+            let pct = Math.round((score / quizData.length) * 100);
+            LMSSetValue_("cmi.core.score.raw", String(pct));
+            LMSSetValue_("cmi.core.lesson_status", "incomplete");
+            LMSCommit_();
+            showCompletionMessage(score, quizData.length, false);
+        }
+    } else {
+        // Fallback for non-SCORM environments
+        showCompletionMessage(score, quizData.length, score === quizData.length);
+    }
 }
 
-// Display quiz results
-function displayResults(score, total) {
-    const percentage = Math.round((score / total) * 100);
-    const passed = percentage >= 70;
+function mark(blockId, ok) {
+    const block = document.getElementById(blockId);
+    if (!block) return;
     
-    const resultsContainer = document.getElementById('results-container');
+    block.classList.remove("correct", "incorrect");
+    block.classList.add(ok ? "correct" : "incorrect");
     
-    let html = `<div class="results">`;
-    html += `<h2>${passed ? '🎉 Congratulations!' : '📚 Keep Learning!'}</h2>`;
-    html += `<p>Your Score: <strong>${score} / ${total}</strong></p>`;
-    html += `<p>Percentage: <strong>${percentage}%</strong></p>`;
-    html += `<p>${passed ? 'You passed the quiz!' : 'Please review the material and try again.'}</p>`;
-    html += `<button class="btn-retry" onclick="location.reload()">Retry Quiz</button>`;
-    html += `</div>`;
+    const comm = block.querySelector(".commentary");
+    if (comm) comm.style.display = ok ? "none" : "block";
+}
+
+function showCompletionMessage(score, total, passed) {
+    const viewer = document.getElementById("viewer");
+    const pct = Math.round((score / total) * 100);
     
-    resultsContainer.innerHTML = html;
+    let html = `<div class="results">
+                    <h2>${passed ? '🎉 Congratulations!' : '📚 Keep Learning!'}</h2>
+                    <p>Your Score: <strong>${score} / ${total}</strong></p>
+                    <p>Percentage: <strong>${pct}%</strong></p>
+                    <p>${passed ? 'You have passed the training.' : 'Please review the incorrect answers.'}</p>
+                    ${!passed ? '<button class="btn-retry" onclick="location.reload()" style="background:white; color:#667eea; border:none; padding:10px 30px; border-radius:6px; cursor:pointer; margin-top:20px; font-weight:bold;">Retry</button>' : ''}
+                </div>`;
+                
+    if(passed) {
+        viewer.innerHTML = html;
+    } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        let existingResult = document.querySelector('.results');
+        if(existingResult) existingResult.remove();
+        viewer.insertAdjacentHTML('afterbegin', html);
+    }
 }
 </script>
 
