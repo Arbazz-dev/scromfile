@@ -369,7 +369,7 @@ function gradeQuiz() {
             LMSSetValue_("cmi.core.score.raw", "100");
             LMSSetValue_("cmi.core.lesson_status", "passed");
             LMSCommit_();
-            showCompletionMessage(score, quizData.length, true);
+            showCompletionMessage(); // Call it here for 100% correct
             
             setTimeout(() => {
                 if (typeof LMSFinish_ === "function") LMSFinish_("");
@@ -380,11 +380,12 @@ function gradeQuiz() {
             LMSSetValue_("cmi.core.score.raw", String(pct));
             LMSSetValue_("cmi.core.lesson_status", "incomplete");
             LMSCommit_();
-            showCompletionMessage(score, quizData.length, false);
         }
     } else {
-        // Fallback for non-SCORM environments
-        showCompletionMessage(score, quizData.length, score === quizData.length);
+        // If no SCORM, still show completion for perfect score
+        if (score === quizData.length) {
+            showCompletionMessage();
+        }
     }
 }
 
@@ -399,27 +400,77 @@ function mark(blockId, ok) {
     if (comm) comm.style.display = ok ? "none" : "block";
 }
 
-function showCompletionMessage(score, total, passed) {
+function showCompletionMessage(){
     const viewer = document.getElementById("viewer");
-    const pct = Math.round((score / total) * 100);
+    if (viewer) viewer.innerHTML = "";
     
-    let html = `<div class="results">
-                    <h2>${passed ? '🎉 Congratulations!' : '📚 Keep Learning!'}</h2>
-                    <p>Your Score: <strong>${score} / ${total}</strong></p>
-                    <p>Percentage: <strong>${pct}%</strong></p>
-                    <p>${passed ? 'You have passed the training.' : 'Please review the incorrect answers.'}</p>
-                    ${!passed ? '<button class="btn-retry" onclick="location.reload()" style="background:white; color:#667eea; border:none; padding:10px 30px; border-radius:6px; cursor:pointer; margin-top:20px; font-weight:bold;">Retry</button>' : ''}
-                </div>`;
-                
-    if(passed) {
-        viewer.innerHTML = html;
-    } else {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-        let existingResult = document.querySelector('.results');
-        if(existingResult) existingResult.remove();
-        viewer.insertAdjacentHTML('afterbegin', html);
-    }
+    const overlay = document.createElement("div");
+    overlay.style.position = "fixed";
+    overlay.style.top = "0";
+    overlay.style.left = "0";
+    overlay.style.width = "100vw";
+    overlay.style.height = "100vh";
+    overlay.style.background = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+    overlay.style.zIndex = "9998";
+    overlay.style.display = "flex";
+    overlay.style.alignItems = "center";
+    overlay.style.justifyContent = "center";
+    document.body.appendChild(overlay);
+    
+    const card = document.createElement("div");
+    card.style.background = "white";
+    card.style.borderRadius = "16px";
+    card.style.padding = "60px 80px";
+    card.style.textAlign = "center";
+    card.style.boxShadow = "0 20px 60px rgba(0,0,0,0.3)";
+    card.style.animation = "slideUp 0.6s ease";
+    
+    const checkmark = document.createElement("div");
+    checkmark.style.width = "60px";
+    checkmark.style.height = "60px";
+    checkmark.style.borderRadius = "50%";
+    checkmark.style.background = "#10b981";
+    checkmark.style.margin = "0 auto 24px";
+    checkmark.style.display = "flex";
+    checkmark.style.alignItems = "center";
+    checkmark.style.justifyContent = "center";
+    checkmark.style.fontSize = "34px";
+    checkmark.style.fontWeight = "bold";
+    checkmark.style.color = "white";
+    checkmark.innerHTML = "✓";
+
+     
+   
+    
+    const title = document.createElement("h2");
+    title.textContent = "Course Completed";
+    title.style.fontSize = "32px";
+    title.style.fontWeight = "700";
+    title.style.color = "#1f2937";
+    title.style.marginBottom = "12px";
+    
+   
+    
+    card.appendChild(checkmark);
+    card.appendChild(title);
+    overlay.appendChild(card);
+    
+    const style = document.createElement("style");
+    style.textContent = "@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }";
+    document.head.appendChild(style);
+
+    setTimeout(() => {
+        // Try to communicate with parent window to close modal
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'CLOSE_QUIZ_MODAL' }, '*');
+        }
+        
+        // If in standalone mode, try window.close()
+        window.close();
+    }, 1500);
+
 }
+
 </script>
 
 </body>

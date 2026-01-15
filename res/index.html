@@ -166,7 +166,7 @@
 
     </script>
 
-    <script src="config.js"></script>
+        <script src="config.js"></script>
 
 <script>
 window.addEventListener('load', function() {
@@ -406,8 +406,16 @@ window.addEventListener('load', function() {
   // Start the finding process
   initWatcher();
 });
-</script>
 
+// In the main HTML file (where showQuizInModal is defined)
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'CLOSE_QUIZ_MODAL') {
+        // Find and remove the modal
+        window.close();
+    }
+});
+
+</script>
 
 
 
